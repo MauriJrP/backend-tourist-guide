@@ -1,18 +1,13 @@
 import {Router} from 'express';
 const router: Router = Router();
 
-import {mysqlConnection} from '../database';
+import {signup, login} from '../controllers/auth.controller';
+import {verifyToken, schemaValidation} from '../middlewares/index';
+import { loginSchema } from '../schemas/auth.schema';
 
-router.get('/', (req, res) => {
-  const query = `SELECT * FROM students`;
-  mysqlConnection.query(query, (err, rows, fields) => {
-    if (!err) {
-      res.json(rows);
-    } else {
-      console.log(err);
-    }
-  });
-  // res.send("Auth");
-})
+router.post('/signup', signup);
+router.post('/login', schemaValidation(loginSchema), login);
+
+
 
 export default router;
