@@ -18,7 +18,9 @@ export const getPlaceById = (req: Request, res: Response) => {
 }
 
 export const createPlace = (req: Request, res: Response) => {
-  
+  console.log("entro a createPlace")
+  console.log(req.file);
+  res.json([{message: "createPlace"}])
 }
 
 export const updatePlaceById = (req: Request, res: Response) => {
