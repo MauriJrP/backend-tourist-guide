@@ -13,7 +13,7 @@ export const signupSchema = z.object({
     email: z.string().nonempty("Email is required").email("Invalid email"),
     password: z.string().nonempty("Password is required").min(8, "Password too short"),
     gender: z.string().length(1),
-    age: z.number().positive().gte(18, "Must be over 18 years old"),
+    age: z.number().positive("Must be over 18 years old").gte(18, "Must be over 18 years old"),
   })
 })
 

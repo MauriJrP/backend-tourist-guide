@@ -18,7 +18,7 @@ export const getPlaceById = (req: Request, res: Response) => {
 }
 
 export const createPlace = (req: Request, res: Response) => {
-
+  
 }
 
 export const updatePlaceById = (req: Request, res: Response) => {

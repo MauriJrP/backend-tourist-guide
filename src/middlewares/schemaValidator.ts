@@ -11,7 +11,8 @@ export const schemaValidation = (schema: AnyZodObject) => (req: Request, res: Re
     next();
   } catch (err) {
     if (err instanceof ZodError) 
-      return res.status(400).json(err.issues.map(issue => ({message: issue.message})));
+      return res.json(err.issues.map(issue => ({message: issue.message})));
+      // return res.status(400).json(err.issues.map(issue => ({message: issue.message})));
     return res.status(400).json({message: "internal server error"});
   }
 }

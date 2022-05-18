@@ -2,8 +2,6 @@ CREATE DATABASE IF NOT EXISTS `tourist-guide`;
 
 USE `tourist-guide`;
 
--------- ------- ------ ----- tables ----- ------ ------- --------
-
 CREATE TABLE roles (
   idRole INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   role VARCHAR(20) NOT NULL UNIQUE
@@ -16,7 +14,7 @@ CREATE TABLE users (
   password VARCHAR(100) NOT NULL,
   idRole INT DEFAULT(1) NOT NULL,
   age INT NOT NULL,
-  gender CHAR NOT NULL DEFAULT="U",
+  gender CHAR NOT NULL DEFAULT("U"),
   muted BOOL DEFAULT false,
   FOREIGN KEY (idRole) REFERENCES roles(idRole),
   CHECK (gender='F' OR gender='M' OR gender='U')
@@ -27,25 +25,59 @@ CREATE TABLE placeTypes (
 	placeType VARCHAR(50) NOT NULL UNIQUE
 );
 
+CREATE TABLE locations (
+    idLocation INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    location varchar(50) NOT NULL UNIQUE
+);
+
 CREATE TABLE places (
     idPlace INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     name VARCHAR(25) NOT NULL,
     address VARCHAR(200) NOT NULL,
     phone VARCHAR(10) UNIQUE,
-    manager VARCHAR(50) DEFAULT="No aplica",
+    openingHours VARCHAR(11) NOT NULL,
+    manager VARCHAR(50) DEFAULT("No aplica"),
     price INT DEFAULT '0' NOT NULL,
-    idPlaceType INT,
+    idPlaceType INT NOT NULL,
     description VARCHAR(500) NOT NULL,
-    idLocation INT,
-    rating float,
-    FOREIGN KEY(idPlaceType) REFERENCES placeType(idPlaceType),
+    idLocation INT NOT NULL,
+    rating FLOAT,
+    FOREIGN KEY(idPlaceType) REFERENCES placeTypes(idPlaceType),
     FOREIGN KEY(idLocation) REFERENCES locations(idLocation),
     CHECK (rating >= 0 AND rating <= 5)
 );
 
+CREATE TABLE ratings (
+    idRating INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    idPlace INT NOT NULL,
+    idUser INT NOT NULL,
+    comment varchar(200),
+    rating FLOAT,
+    ratingDate date DEFAULT(CURRENT_DATE),
+    FOREIGN KEY(idPlace) REFERENCES places(idPlace),
+    FOREIGN KEY(idUser) REFERENCES users(idUser),
+    CHECK (rating >= 0 AND rating <= 5)
+);
 
+CREATE TABLE photos (
+    idPhoto INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    photo varchar(200) NOT NULL
+);
 
--------- ------- ------ ----- Insertions ----- ------ ------- --------
+CREATE TABLE gallery (
+    idGallery INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    name varchar(200) NOT NULL,
+    idPlace INT NOT NULL,
+    FOREIGN KEY(idPlace) REFERENCES places(idPlace)
+);
+
+CREATE TABLE galleryDetail (
+    idGalleryDetail INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    idGallery INT NOT NULL,
+    idPhoto INT NOT NULL,
+    FOREIGN KEY(idGallery) REFERENCES gallery(idGallery),
+    FOREIGN KEY(idPhoto) REFERENCES photos(idPhoto)
+);
 
 INSERT INTO roles (role)
 VALUES
@@ -54,12 +86,25 @@ VALUES
 ;
 
 INSERT INTO users (name, email, password, idRole, age, gender)
-VALUES ('Mauricio', "maurijrp2001@gmail.com", "12345678", (SELECT idRole FROM roles WHERE role ='admin'), 18, "M");
+VALUES 
+  ('Mauricio', "maurijrp2001@gmail.com", "$2y$10$Z.u2MDGjtDRlZLd.XudyAuuNxsAxmE65ezVMowpZhKj/gaiLWi/Fy", (SELECT idRole FROM roles WHERE role ='admin'), 18, "M")
+;
 
-INSERT INTO users (name, email, password, idRole, age, gender)
-VALUES ('Juanito', "juanito@gmail.com", "12345678", (SELECT idRole FROM roles WHERE role ='user'), 18, "M");
+INSERT INTO placeTypes (placeType)
+VALUES
+  ("Comida"),
+  ("Cultural"),
+  ("Deportivo"),
+  ("Natural"),
+  ("Salud"),
+  ("Autoservicio"),
+  ("Souvenirs")
+;
 
-INSERT INTO users (name, email, password, idRole, age, gender)
-VALUES ('Juanito', "juanito@gmailx.com", "12345678", (SELECT idRole FROM roles WHERE role ='user'), 18, "X");
-
-DELETE FROM users WHERE users.email="juanito@gmailx.com";
+INSERT INTO locations (location)
+VALUES
+  ("Guadalajara"),
+  ("Puerto Vallarta"),
+  ("Zapopan"),
+  ("Tequila")
+;

@@ -8,7 +8,6 @@ import bcrypt from 'bcryptjs'
 export const signup = (req: Request<unknown, unknown, SignupType>, res: Response) => {
   const {name, age, email, gender, password} = req.body;
 
-  //* -------- ------- ------ ----- Insert ----- ------ ------- --------
   const query = 
   `INSERT INTO users (name, email, password, idRole, age, gender)
   VALUES (?, ?, ?, (SELECT idRole FROM roles WHERE role =?), ?, ?);`;
@@ -17,25 +16,34 @@ export const signup = (req: Request<unknown, unknown, SignupType>, res: Response
   const role = 'user';
 
   mysqlConnection.query(query, [name, email, hash, role, age, gender], (err, rows, fields) => {
-    if (!err) {
-      console.log("Funciono?")
-      res.json(rows);
-    } else {
+    try {
       console.log(err);
+      if (err) res.json([{message: "Email already in use"}]);
+      else res.json([{message: rows.message}]);
+    } catch (error) {
+      console.log(error);
     }
   });
 }
 
 export const login = (req: Request<unknown, unknown, LoginType>, res: Response) => {
   const {email, password} = req.body;
-  mysqlConnection.query(`SELECT * FROM users WHERE email="?"`, [email])
-
-  //* -------- ------- ------ ----- Generate token ----- ------ ------- --------
-  const id = "1";
-  const token = jwt.sign({id}, process.env.SECRET_KEY || '12345', {
-    expiresIn: 60*1 //1 min
-  })
-
-  //* -------- ------- ------ ----- Response ----- ------ ------- --------
-  res.json({token});
+  const query = `SELECT * FROM users WHERE email=?`;
+  mysqlConnection.query(query, [email], (err, rows, fields) => {
+    try {
+      if (err) res.json([{message: "Query error"}]);
+      else {
+        if (rows.length === 0) res.json([{message: "User not found"}]);
+        if (bcrypt.compareSync(password, rows[0].password)) {
+          const token = jwt.sign({ id: rows[0].idUser }, process.env.SECRET_KEY || '123', {
+            expiresIn: 60*10 //1 min
+          })
+          res.json([{token, user: rows[0]}]);
+        }
+        else res.json([{message: "Wrong password"}])
+      } 
+    } catch (error) {
+      console.log(error);
+    }
+  });
 }
