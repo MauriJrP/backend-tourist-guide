@@ -10,17 +10,22 @@ import authRoutes from './routes/auth.routes'
 import userRoutes from './routes/user.routes'
 import placesRoutes from './routes/places.routes';
 
-app.set('port', process.env.PORT || 4000);
-// path.join(__dirname, 'public')
+const storage = multer.diskStorage({
+  destination: path.join(__dirname, 'public/uploads'),
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
 
-//middlewares
+app.set('port', process.env.PORT || 4000);
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cors())
-app.use(multer({dest: path.join(__dirname, 'public/uploads')}).single('image'))
+// app.use(multer({ storage, dest: path.join(__dirname, 'public/uploads')}).single('image'));
+app.use(multer({ storage, dest: path.join(__dirname, 'public/uploads')}).array('images', 5));
 
-//routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/places', placesRoutes);
