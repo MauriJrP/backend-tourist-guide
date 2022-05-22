@@ -1,3 +1,4 @@
+DROP DATABASE `tourist-guide`;
 CREATE DATABASE IF NOT EXISTS `tourist-guide`;
 
 USE `tourist-guide`;
@@ -41,7 +42,7 @@ CREATE TABLE places (
     idPlaceType INT NOT NULL,
     description VARCHAR(500) NOT NULL,
     idLocation INT NOT NULL,
-    rating FLOAT,
+    rating FLOAT DEFAULT 0,
     FOREIGN KEY(idPlaceType) REFERENCES placeTypes(idPlaceType),
     FOREIGN KEY(idLocation) REFERENCES locations(idLocation),
     CHECK (rating >= 0 AND rating <= 5)
@@ -61,7 +62,8 @@ CREATE TABLE ratings (
 
 CREATE TABLE photos (
     idPhoto INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    photo varchar(200) NOT NULL
+    photo varchar(200) NOT NULL,
+    defaultPhoto BOOL DEFAULT false
 );
 
 CREATE TABLE gallery (
@@ -108,3 +110,12 @@ VALUES
   ("Zapopan"),
   ("Tequila")
 ;
+
+-- SELECT p.idPlace, p.name, p.description, p.rating, MIN(ph.photo) AS photo
+-- FROM places AS p
+-- JOIN gallery AS g ON p.idPlace = g.idPlace
+-- JOIN galleryDetail AS gd ON g.idGallery = gd.idGallery
+-- JOIN photos AS ph ON ph.idPhoto = gd.idPhoto
+-- GROUP BY idPlace
+-- LIMIT 0,20
+-- ;

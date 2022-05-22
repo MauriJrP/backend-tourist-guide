@@ -6,16 +6,16 @@ import { placeSchema } from '../schemas/places.schema';
 
 const router: Router = Router();
 
-router.get('/', placesCtrl.getPlacesPage);
+router.get('/page/:pageNum', placesCtrl.getPlacesPage);
 router.get('/placeTypes', placesCtrl.getPlaceTypes);
 router.get('/locations', placesCtrl.getLocations);
-router.get('/:placeId', placesCtrl.getPlaceById);
+router.get('/place/:placeId', placesCtrl.getPlaceById);
 
-router.post('/create', schemaValidation(placeSchema), placesCtrl.createPlace);
-router.post('/addGallery', placesCtrl.addGallery);
+router.post('/place/create', schemaValidation(placeSchema), placesCtrl.createPlace);
+router.post('/place/addGallery', placesCtrl.addGallery);
 
-router.put('/:placeId', placesCtrl.updatePlaceById);
+router.put('/place/:placeId', placesCtrl.updatePlaceById);
 
-router.delete('/:placeId', placesCtrl.deletePlaceById);
+router.delete('/place/:placeId', placesCtrl.deletePlaceById);
 
 export default router;

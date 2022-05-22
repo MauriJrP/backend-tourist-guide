@@ -25,6 +25,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(cors())
 // app.use(multer({ storage, dest: path.join(__dirname, 'public/uploads')}).single('image'));
 app.use(multer({ storage, dest: path.join(__dirname, 'public/uploads')}).array('images', 5));
+app.use(express.static(path.join(__dirname, 'public/uploads')))
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
