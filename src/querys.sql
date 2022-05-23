@@ -116,6 +116,7 @@ VALUES
 -- JOIN gallery AS g ON p.idPlace = g.idPlace
 -- JOIN galleryDetail AS gd ON g.idGallery = gd.idGallery
 -- JOIN photos AS ph ON ph.idPhoto = gd.idPhoto
+-- WHERE idPlaceType = 6 AND price <= 1000
 -- GROUP BY idPlace
 -- LIMIT 0,20
 -- ;

@@ -14,4 +14,14 @@ export const placeSchema = z.object({
   })
 })
 
+export const filtersSchema = z.object({
+  body: z.object({
+    idPlaceType: z.number().optional(),
+    idLocation: z.number().optional(),
+    rating: z.number().min(0).max(5).optional(),
+    price: z.number().min(0).max(100000).optional(),
+  })
+})
+
 export type PlaceType = z.infer<typeof placeSchema>["body"];
+export type FilterType = z.infer<typeof filtersSchema>["body"];

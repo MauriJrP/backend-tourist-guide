@@ -1,8 +1,8 @@
-import {Request, Response} from 'express';
+import {query, Request, Response} from 'express';
 import multer, { Multer } from 'multer';
 import { mysqlConnection } from '../database';
 import { IPlace } from '../models/types';
-import { PlaceType } from '../schemas/places.schema';
+import { FilterType, PlaceType } from '../schemas/places.schema';
 
 export const getPlacesPage = (req: Request, res: Response) => {
   const {pageNum} = req.params;
@@ -22,7 +22,57 @@ export const getPlacesPage = (req: Request, res: Response) => {
     if (!err) res.json([{places: rows}]);
     else console.log(err);
   })
-
+}
+export const getFilteredPlacesPage = (req: Request<any, unknown, FilterType>, res: Response) => {
+  const {pageNum} = req.params;
+  const last = parseInt(pageNum) * 20;
+  const first = last - 20;
+  const {idLocation, idPlaceType, price, rating} = req.body;
+  let andFlag = false;
+  let filters = ``;
+  if (idLocation) {
+    filters += `idLocation = ${idLocation}`
+    andFlag = true;
+  } 
+  if (idPlaceType) {
+    if (andFlag) filters += ` AND idPlaceType = ${idPlaceType}`;
+    else {
+      filters += `idPlaceType = ${idPlaceType}`;
+      andFlag = true;
+    }
+  }
+  if (price) {
+    if (andFlag) filters += ` AND price <= ${price}`;
+    else {
+      filters += `price = ${price}`;
+      andFlag = true;
+    }
+  }
+  if (rating) {
+    if (andFlag) filters += ` AND rating >= ${rating}`;
+    else {
+      filters += `rating = ${rating}`;
+      andFlag = true;
+    }
+  }
+  const query = 
+  `SELECT p.idPlace, p.name, p.description, p.rating, MIN(ph.photo) AS photo
+  FROM places AS p
+  JOIN gallery AS g ON p.idPlace = g.idPlace
+  JOIN galleryDetail AS gd ON g.idGallery = gd.idGallery
+  JOIN photos AS ph ON ph.idPhoto = gd.idPhoto
+  WHERE ${filters}
+  GROUP BY idPlace
+  LIMIT ?,?
+  ;`;
+  // console.log(query);
+  mysqlConnection.query(query, [first, last], (err, rows, fields) => {
+    if (!err) res.json([{message: "ok", places: rows}]);
+    else {
+      console.log(err);
+      res.json([{message: "Query Error"}])
+    }
+  })
 }
 
 export const getPlaceById = (req: Request, res: Response) => {
