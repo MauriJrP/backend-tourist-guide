@@ -48,8 +48,8 @@ CREATE TABLE places (
     CHECK (rating >= 0 AND rating <= 5)
 );
 
-CREATE TABLE ratings (
-    idRating INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+CREATE TABLE comments (
+    idComment INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     idPlace INT NOT NULL,
     idUser INT NOT NULL,
     comment varchar(200),
@@ -134,3 +134,13 @@ VALUES
 -- FROM photos AS p
 -- JOIN galleryDetail AS gd ON gd.idPhoto = p.idPhoto
 -- JOIN gallery AS g ON gd.idGallery = 2;
+
+-- INSERT INTO comments (idPlace, idUser, comment, rating)
+--   VALUES (1, 2, "excelente servicio", 3);
+
+-- DELETE FROM comments
+--   WHERE idComment = 1;
+
+-- SELECT c.idComment, c.ratingDate, c.rating, c.comment, c.idUser, u.name  FROM comments AS c
+-- JOIN users AS u ON c.idUser = u.idUser
+-- WHERE idPlace = 1;

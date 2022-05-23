@@ -9,6 +9,7 @@ import path from 'path'
 import authRoutes from './routes/auth.routes'
 import userRoutes from './routes/user.routes'
 import placesRoutes from './routes/places.routes';
+import commentsRoutes from './routes/comments.routes';
 
 const storage = multer.diskStorage({
   destination: path.join(__dirname, 'public/uploads'),
@@ -30,6 +31,6 @@ app.use(express.static(path.join(__dirname, 'public/uploads')))
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/places', placesRoutes);
-app.use('/api/comments', placesRoutes);
+app.use('/api/comments', commentsRoutes);
 
 app.listen(app.get('port'), () => console.log("Server on port: ", app.get('port')));
