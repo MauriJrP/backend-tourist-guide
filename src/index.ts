@@ -24,11 +24,12 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cors())
 // app.use(multer({ storage, dest: path.join(__dirname, 'public/uploads')}).single('image'));
-app.use(multer({ storage, dest: path.join(__dirname, 'public/uploads')}).array('images', 5));
+app.use(multer({ storage, dest: path.join(__dirname, 'public/uploads')}).array('images', 12));
 app.use(express.static(path.join(__dirname, 'public/uploads')))
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/places', placesRoutes);
+app.use('/api/comments', placesRoutes);
 
 app.listen(app.get('port'), () => console.log("Server on port: ", app.get('port')));

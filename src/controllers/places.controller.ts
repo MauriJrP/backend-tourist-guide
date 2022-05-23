@@ -1,10 +1,11 @@
 import {Request, Response} from 'express';
 import multer, { Multer } from 'multer';
 import { mysqlConnection } from '../database';
+import { IPlace } from '../models/types';
 import { PlaceType } from '../schemas/places.schema';
 
 export const getPlacesPage = (req: Request, res: Response) => {
-  const {pageNum} = req.params
+  const {pageNum} = req.params;
   const last = parseInt(pageNum) * 20;
   const first = last - 20;
   // const query = `SELECT idPlace, name, description, rating FROM places Limit ?,?`;
@@ -25,6 +26,67 @@ export const getPlacesPage = (req: Request, res: Response) => {
 }
 
 export const getPlaceById = (req: Request, res: Response) => {
+  const {placeId} = req.params;
+  const queryPlace = 
+  `SELECT idPlace, name, address, phone, openingHours, price, rating, description, placeType, location
+  FROM places AS p
+  JOIN placeTypes AS pt ON p.idPlaceType = pt.idPlaceType
+  JOIN locations AS l ON p.idLocation = l.idLocation
+  WHERE idPlace = ?;
+  `
+  const queryGalleries = 
+  `SELECT idGallery, name
+  FROM gallery
+  WHERE idPlace = ?;
+  `
+
+  const queryPhotos = 
+  `SELECT DISTINCT p.photo
+  FROM photos AS p
+  JOIN galleryDetail AS gd ON gd.idPhoto = p.idPhoto
+  JOIN gallery AS g ON gd.idGallery = ?;
+  `
+  
+  let place: IPlace = {
+    idPlace: 0,
+    name: '',
+    address: '',
+    phone: '',
+    openingHours: '',
+    price: 0,
+    rating: 0,
+    placeType: '',
+    location: '',
+    description: '',
+    galleries: []
+  };
+
+  const getPhotos = (err: any, rows: any, fields: any) => {
+    let total: number = rows.length;
+
+    rows.forEach((gallery: {idGallery: number; name: string;}) => {
+      mysqlConnection.query(queryPhotos, [gallery.idGallery], (err, rows, fields) => {
+        // console.log("test");
+        // console.log(photos);
+        const photos = rows.map((row: any) => row.photo)
+        place.galleries.push({name: gallery.name, images: (photos as string[])});
+        --total;
+        // if (total === 0) console.log(place);
+        if (total === 0) res.json([place]);
+      })
+    })
+  }
+
+  const getGalleries = (err: any, rows: any, fields: any) => {
+    place = {...place, ...rows[0]}
+    try {
+      mysqlConnection.query(queryGalleries, [placeId], getPhotos)
+    } catch (error) {
+      res.json([{message: "Query errors"}])
+    }
+  }
+
+  mysqlConnection.query(queryPlace, [placeId], getGalleries)
 
 }
 

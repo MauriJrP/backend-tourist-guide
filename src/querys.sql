@@ -34,7 +34,7 @@ CREATE TABLE locations (
 CREATE TABLE places (
     idPlace INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     name VARCHAR(25) NOT NULL,
-    address VARCHAR(200) NOT NULL,
+    address VARCHAR(200) NOT NULL UNIQUE,
     phone VARCHAR(10) UNIQUE,
     openingHours VARCHAR(11) NOT NULL,
     manager VARCHAR(50) DEFAULT("No aplica"),
@@ -119,3 +119,18 @@ VALUES
 -- GROUP BY idPlace
 -- LIMIT 0,20
 -- ;
+
+-- SELECT idPlace, name, address, phone, openingHours, price, rating, description, placeType, location
+-- FROM places AS p
+-- JOIN placeTypes AS pt ON p.idPlaceType = pt.idPlaceType
+-- JOIN locations AS l ON p.idLocation = l.idLocation
+-- WHERE idPlace = 1;
+
+-- SELECT idGallery, name
+-- FROM gallery
+-- WHERE idPlace = placeId;
+
+-- SELECT DISTINCT p.photo, p.idPhoto
+-- FROM photos AS p
+-- JOIN galleryDetail AS gd ON gd.idPhoto = p.idPhoto
+-- JOIN gallery AS g ON gd.idGallery = 2;

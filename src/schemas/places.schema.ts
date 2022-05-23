@@ -1,4 +1,4 @@
-import {any, z} from 'zod'
+import {z} from 'zod'
 
 export const placeSchema = z.object({
   body: z.object({
